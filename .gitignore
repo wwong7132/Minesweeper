@@ -18,11 +18,12 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-*.exe
+# Files built by Visual Studio
 *.pdb
 
 **/bin/*/*
 **/obj/*/*
+**/.vs/*/*
 
 # =========================
 # Operating System Files
