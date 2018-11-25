@@ -19,10 +19,10 @@ $RECYCLE.BIN/
 *.lnk
 
 *.exe
+*.config
 *.pdb
 
-**/bin/*/*
-**/obj/*/*
+*/*
 
 # =========================
 # Operating System Files

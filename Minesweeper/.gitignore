@@ -20,10 +20,6 @@ $RECYCLE.BIN/
 
 *.exe
 *.pdb
-
-**/bin/*/*
-**/obj/*/*
-
 # =========================
 # Operating System Files
 # =========================

@@ -124,10 +124,14 @@ namespace Minesweeper
             Console.WriteLine(" ------- ");
             Console.WriteLine("Tile at " + location.X + "," + location.Y + " clicked. ");
 
+            //Check if game is ongoing
+            if (board.GetBoardGameOver())
+            {
+                return;
+            }
             if (e.Button == MouseButtons.Left)
             {
                 //Reveal
-
                 Console.WriteLine("Reveal");
                 board.Reveal(location.X, location.Y);
                 SetRevealSpace(location.X, location.Y);
@@ -141,13 +145,14 @@ namespace Minesweeper
                 board.SetFlag(location.X, location.Y);
                 Console.WriteLine(board.FlagPrint());
             }
+            FlagCountTextUpdate();
         }
 
         public void SetFlagSpace( int row, int col )
         {
             var button = (Button)Gameboard.GetControlFromPosition(col, row);
-            
-            if(FlagsLeft > 0)
+
+            if (FlagsLeft > 0)
             {
                 if (!board.IsRevealed(row, col))
                 {
@@ -168,43 +173,46 @@ namespace Minesweeper
         {
             var button = (Button)Gameboard.GetControlFromPosition(col, row);
             UpdateBoard();
-            if (!board.IsRevealed(row, col) && !board.IsFlagged(row, col))
+            if (!board.IsFlagged(row, col))
             {
-                switch (board.GetSurroundingMines(row, col))
+                if(!board.IsRevealed(row, col))
                 {
-                    case 0:
-                        button.BackgroundImage = Minesweeper.Properties.Resources._0;
-                        break;
-                    case 1:
-                        button.BackgroundImage = Minesweeper.Properties.Resources._1;
-                        break;
-                    case 2:
-                        button.BackgroundImage = Minesweeper.Properties.Resources._2;
-                        break;
-                    case 3:
-                        button.BackgroundImage = Minesweeper.Properties.Resources._3;
-                        break;
-                    case 4:
-                        button.BackgroundImage = Minesweeper.Properties.Resources._4;
-                        break;
-                    case 5:
-                        button.BackgroundImage = Minesweeper.Properties.Resources._5;
-                        break;
-                    case 6:
-                        button.BackgroundImage = Minesweeper.Properties.Resources._6;
-                        break;
-                    case 7:
-                        button.BackgroundImage = Minesweeper.Properties.Resources._7;
-                        break;
-                    case 8:
-                        button.BackgroundImage = Minesweeper.Properties.Resources._8;
-                        break;
+                    switch (board.GetSurroundingMines(row, col))
+                    {
+                        case 0:
+                            button.BackgroundImage = Minesweeper.Properties.Resources._0;
+                            break;
+                        case 1:
+                            button.BackgroundImage = Minesweeper.Properties.Resources._1;
+                            break;
+                        case 2:
+                            button.BackgroundImage = Minesweeper.Properties.Resources._2;
+                            break;
+                        case 3:
+                            button.BackgroundImage = Minesweeper.Properties.Resources._3;
+                            break;
+                        case 4:
+                            button.BackgroundImage = Minesweeper.Properties.Resources._4;
+                            break;
+                        case 5:
+                            button.BackgroundImage = Minesweeper.Properties.Resources._5;
+                            break;
+                        case 6:
+                            button.BackgroundImage = Minesweeper.Properties.Resources._6;
+                            break;
+                        case 7:
+                            button.BackgroundImage = Minesweeper.Properties.Resources._7;
+                            break;
+                        case 8:
+                            button.BackgroundImage = Minesweeper.Properties.Resources._8;
+                            break;
+                    }
                 }
-            }
-            if (board.IsMine(row, col))
-            {
-                button.BackgroundImage = Minesweeper.Properties.Resources.mine2;
-                //Event to end game
+                if (board.IsMine(row, col))
+                {
+                    button.BackgroundImage = Minesweeper.Properties.Resources.mine2;
+                    //Event to end game
+                }
             }
         }
 
@@ -272,17 +280,21 @@ namespace Minesweeper
 
         private void GameTimeUpdate(object source, ElapsedEventArgs e)
         {
+            if (board.GetBoardGameOver())
+            {
+                timer.Stop();
+            }
             GameTime++;
-            SetText(GameTime.ToString());
+            SetTimerText(GameTime.ToString());
         }
 
-        private void SetText(string text)
+        private void SetTimerText(string text)
         {
             // InvokeRequired compares the thread ID of the calling thread to the thread ID of the creating thread.
             // If these threads are different, it returns true.
             if (this.TimerBox.InvokeRequired)
             {
-                SetTextCallback d = new SetTextCallback(SetText);
+                SetTextCallback d = new SetTextCallback(SetTimerText);
                 this.Invoke(d, new object[] { text });
             }
             else

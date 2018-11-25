@@ -16,6 +16,7 @@ namespace Minesweeper
         private int FlaggedMines;
         private readonly System.Timers.Timer timer = new System.Timers.Timer();
         public int FlagsLeft;
+        private bool GameOver;
 
         public Tile[,] board;
 
@@ -124,49 +125,58 @@ namespace Minesweeper
                 Console.WriteLine("Revealed Status: " + board[row, col].Revealed);
                 Console.WriteLine("Surrounding Mines: " + board[row, col].SurroundingMines);
             }
-            
 
-            if (board[row, col].Revealed)
+            if (!board[row, col].Flagged && !GameOver)
             {
-                return false;
-            }
-            board[row, col].Revealed = true;
-
-            if (board[row, col].Mine)
-            {
-
-                return true;
-            }
-            else
-            {
-                if (board[row, col].SurroundingMines == 0)
+                if (board[row, col].Revealed)
                 {
-                    for (int i = row - 1; i <= row + 1; i++)
+                    return false;
+                }
+                board[row, col].Revealed = true;
+
+                if (board[row, col].Mine)
+                {
+                    SetGameOver();
+                    return true;
+                }
+                else
+                {
+                    if (board[row, col].SurroundingMines == 0)
                     {
-                        for (int j = col - 1; j <= col + 1; j++)
+                        for (int i = row - 1; i <= row + 1; i++)
                         {
-                            //Keep revealing
-                            if (CheckBounds(i, j) && !board[i, j].Mine)
+                            for (int j = col - 1; j <= col + 1; j++)
                             {
-                                Reveal(i, j);
+                                //Keep revealing
+                                if (CheckBounds(i, j) && !board[i, j].Mine)
+                                {
+                                    Reveal(i, j);
+                                }
                             }
                         }
                     }
                 }
+                //Check surrounding space and reveal if no mines are there
+                return true;
             }
-            //Check surrounding space and reveal if no mines are there
-            return true;
+            return false;
         }
 
         //Set flag on space
         public void SetFlag(int row, int col)
         {
-            if(FlagsLeft > 0)
+            //Only flag a space if there are flags left to use
+            if (FlagsLeft > 0 && !GameOver)
             {
                 if (!board[row, col].Flagged && !board[row, col].Revealed)
                 {
                     board[row, col].Flagged = true;
                     FlagsLeft--;
+                    //Check if game is won
+                    if (CheckGameWon())
+                    {
+                        SetGameOver();
+                    }
                 }
                 else if (board[row, col].Flagged && !board[row, col].Revealed)
                 {
@@ -237,6 +247,16 @@ namespace Minesweeper
             return (FlaggedMines == Mines) && (FlaggedMines == FlaggedTiles);
         }
 
+        private void SetGameOver()
+        {
+            timer.Stop(); 
+            GameOver = true;
+        }
+
+        public bool GetBoardGameOver()
+        {
+            return GameOver;
+        }
 
           /********************************/
          /* Test functions for debugging */
