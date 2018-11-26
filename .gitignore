@@ -28,3 +28,5 @@ $RECYCLE.BIN/
 # =========================
 # Operating System Files
 # =========================
+*.pdb
+Minesweeper/bin/Debug/Minesweeper.exe
